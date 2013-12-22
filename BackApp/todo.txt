@@ -1,0 +1,22 @@
+The following is a list of the most urgent issues in the project:
+
+	1)	Method BackupControl.retreiveSchedules() should handle the following cases:
+			- Schedule cannot be reached.
+			- Backups are found for documents that are no longer tracked by the system.
+
+	2)	Method  Schedule.removeMaterFile() should handle options dealing with backup copies of the master files to be removed.
+
+	3)	BackupControl needs method to handle deletion of single stored documents. 
+
+	4)	BackupControl needs methods to handle schedule update operations. 
+
+
+The following is a list of future nice-haves features for the project:
+
+	1) A GUI.
+
+	2) Security: 
+			- Cryptographic module that secures backups.
+			- Password access.
+			
+	3) Ability to save to online storage facility, eg. Mega or Amazon S3.
