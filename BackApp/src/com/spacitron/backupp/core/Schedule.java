@@ -14,7 +14,7 @@ public class Schedule implements DataStorable{
 	public static final String TYPE = "SCHEDULE";
 	
 	private HashMap<String, String> itemData;
-	private ArrayList<String> masterPaths;
+	private ArrayList<String> masterDocPaths;
 	private boolean stopped;
 	private Filer filer;
 	private int threadCount;
@@ -24,7 +24,7 @@ public class Schedule implements DataStorable{
 	protected Schedule(String name, Long interval, int versionLimit, Filer filer) {
 		stopped = false;
 		threadCount = Runtime.getRuntime().availableProcessors();
-		masterPaths = new ArrayList<String>();
+		masterDocPaths = new ArrayList<>();
 		
 		//All data that needs to be stored for this DataStorable object need to go in the itemData map
 		itemData = new HashMap<String, String>();
@@ -40,7 +40,7 @@ public class Schedule implements DataStorable{
 		//Repopulates backup file list
 		ArrayList<HashMap<String, String>> maps = filer.getDataMaps(Document.TYPE);
 		for(HashMap<String, String> map:maps){
-			addMasterDocument(map.get(Document.ORIGINALLOCATION));
+			addMaster(map.get(Document.ORIGINALLOCATION));
 		}
 	}
 	
@@ -63,14 +63,19 @@ public class Schedule implements DataStorable{
 		stopped = true;
 	}
 	
-	protected void addMasterDocument(String filePath) {
-		masterPaths.add(filePath);
+	/**
+	 * @param filePath Absolute path of file or folders to be added to this backup schedule. In case of a folder
+	 * the schedule will backup all the files contained within the folder itself and all its subfolders.
+	 * 
+	 */
+	protected void addMaster(String filePath) {
+		masterDocPaths.add(filePath);
 	}
 
 	protected void removeMasterDocument(String filePath) {
-		for(int i=0; i<masterPaths.size(); i++){
-			if(masterPaths.get(i).equals(filePath)){
-				masterPaths.remove(i);
+		for(int i=0; i<masterDocPaths.size(); i++){
+			if(masterDocPaths.get(i).equals(filePath)){
+				masterDocPaths.remove(i);
 			}
 		}
 	}
@@ -98,7 +103,7 @@ public class Schedule implements DataStorable{
 	}
 	
 	protected boolean start() {
-		if(masterPaths.size()==0){
+		if(masterDocPaths.size()==0){
 			return false;
 		}
 		new Thread(new Runnable() {
@@ -110,7 +115,7 @@ public class Schedule implements DataStorable{
 					int versionLim = getVersionLimit();
 					ArrayList<HashMap<String, String>> dataMaps = filer.getDataMaps(Document.TYPE);
 					ArrayList<Document> storedDocuments = makeStoredDocuments(dataMaps);
-					ArrayList<MasterDocument> masterDocuments = getMasterDocuments(masterPaths);
+					ArrayList<MasterDocument> masterDocuments = getMasterDocuments(masterDocPaths);
 					ArrayList<Document> docList = groupDocuments(masterDocuments, storedDocuments);
 					Thread[] workerThreads = setThreads(docList, filer, versionLim);
 					for (Thread workerThread : workerThreads) {
@@ -128,23 +133,35 @@ public class Schedule implements DataStorable{
 		return true;
 	}
 	
-	private ArrayList<MasterDocument> getMasterDocuments(ArrayList<String> masterPaths){
+	
+	/**
+	 * @param paths Absolute paths of files and folders than need backing up.
+	 * @return Returns a list of documents from the sources assigned to backup. This method will automatically clear out the sources that are 
+	 * no longer available.
+	 */
+	private ArrayList<MasterDocument> getMasterDocuments(ArrayList<String> paths){
 		ArrayList<MasterDocument> masterDocuments = new ArrayList<>();
 		ArrayList<String> invalidPaths = new ArrayList<>();
-		for(String path: masterPaths){
+		for(String path: paths){
 			File file = new File(path);
-			if(file.exists()){
+			System.out.println(path+ " Exists: "+ file.exists());
+			if(file.isFile()){
 				masterDocuments.add(new MasterDocument(getItemName(), file));
-			}else{
+			}else if(file.isDirectory()){
+				ArrayList <String> dirPath = new ArrayList<String>();
+				for(File f:file.listFiles()){
+					dirPath.add(f.getAbsolutePath());
+				}
+				masterDocuments.addAll(getMasterDocuments(dirPath));
+			}else if(!file.exists()){
 				invalidPaths.add(path);
 			}
 		}
-		masterPaths.removeAll(invalidPaths);
+		paths.removeAll(invalidPaths);
 		return masterDocuments;
 	}
 	
 	
-				
 	 private ArrayList<Document> makeStoredDocuments(ArrayList<HashMap<String, String>> dataMaps) {
 			ArrayList<Document> docs = new ArrayList<Document>();
 			for (HashMap<String, String> map : dataMaps) {

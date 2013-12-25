@@ -9,6 +9,8 @@ The following is a list of the most urgent issues in the project:
 	3)	BackupControl needs method to handle deletion of single stored documents. 
 
 	4)	BackupControl needs methods to handle schedule update operations. 
+	
+	5)  Needs to handle filers and documents that do not have a local corresponding filer. 
 
 
 The following is a list of future nice-haves features for the project:

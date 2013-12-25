@@ -21,22 +21,22 @@ public class BackupControl {
 	
 	public static void main (String[] args){
 		//Name for the backup schedule.
-		String scheduleName = "";
+		String scheduleName = "ciao";
 		//Folder where schedule will create backup directories.
-		String outputPath = "";
+		String outputPath = "C:\\Users\\paolo\\Desktop";
 		//Path of file to backup.
-		String fileToBackup = "";
+		String fileToBackup = "C:\\Users\\paolo\\Desktop\\HeadFirst";
 		//Intervals in milliseconds between backups.
-		long interval = 0l;
+		long interval = 2000l;
 		//Number of versions to maintain for each file.
-		int versionLimit = 0;
+		int versionLimit = 2;
 		
 		//Creates a new controller
 		BackupControl c = new BackupControl();
 		//Creates a new schedule
 		c.addSchedule(scheduleName, outputPath, interval,versionLimit);
 		//Adds file to schedule
-		c.addFileToSchedule(scheduleName,fileToBackup);
+		c.addToSchedule(scheduleName,fileToBackup);
 		//Starts backups
 		c.startSchedule(scheduleName);
 		//Deletes all files and data related to this schedule 
@@ -66,12 +66,12 @@ public class BackupControl {
 	}
 	
 	/**
-	 * @param scheduleName Name of existing schedule to which files need to be added
+	 * @param scheduleName Name of existing schedule to which files or directories need to be added for backup
 	 * @param filePaths Absolute paths of files to be added to this schedule.
 	 */
-	public void addFileToSchedule(String scheduleName, String... filePaths){
+	public void addToSchedule(String scheduleName, String... filePaths){
 		for(String filePath:filePaths){
-			schedules.get(scheduleName).addMasterDocument(filePath);
+			schedules.get(scheduleName).addMaster(filePath);
 		}
 	}
 	
