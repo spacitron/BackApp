@@ -3,6 +3,12 @@ package com.spacitron.backupp.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * @author paolo
+ * 
+ * Defines the interface to be implemented by data storage plug-ins.
+ *
+ */
 public interface Filer {
 	
 	public boolean store(ArrayList<DataStorable> dataStorables);

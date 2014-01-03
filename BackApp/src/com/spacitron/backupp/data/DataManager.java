@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 
 
@@ -123,14 +124,12 @@ public class DataManager {
 				stat = conn.createStatement();
 				String itemName = dataMap.get(ITEMNAME);
 				dataMap.remove(ITEMNAME);
-				Iterator<Entry<String, String>> it = dataMap.entrySet().iterator();
+				Set<String> keySet = dataMap.keySet();
 				String fields = "(";
 				String values = "(";
-
-				while (it.hasNext()) {
-					Map.Entry<String, String> p = it.next();
-					fields += p.getKey() + ",";
-					values += "'" + p.getValue() + "',";
+				for(String key: keySet){
+					fields += key + ", ";
+					values +="'"+dataMap.get(key)+ "',";
 				}
 
 				fields += ITEMNAME + ")";
@@ -233,17 +232,19 @@ public class DataManager {
 		return stringObj;
 	}
 	
-	public void printData(String table){
-		ArrayList<HashMap<String, String>> rows = getTable(table);
-		for(HashMap<String, String> row:rows){
-			Iterator <Entry<String, String>> it = row.entrySet().iterator();
-			while(it.hasNext()){
-				Map.Entry<String, String> p = it.next();
-				System.out.print(" | "+p.getKey()+" = "+p.getValue()+" | ");	
-			}
-			System.out.println();
-		}
-	}
+// 	This is here for testing purposes	
+//	
+//	public void printData(String table){
+//		ArrayList<HashMap<String, String>> rows = getTable(table);
+//		for(HashMap<String, String> row:rows){
+//			Iterator <Entry<String, String>> it = row.entrySet().iterator();
+//			while(it.hasNext()){
+//				Map.Entry<String, String> p = it.next();
+//				System.out.print(" | "+p.getKey()+" = "+p.getValue()+" | ");	
+//			}
+//			System.out.println();
+//		}
+//	}
 	
 	
 

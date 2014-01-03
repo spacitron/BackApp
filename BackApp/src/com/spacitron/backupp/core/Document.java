@@ -7,17 +7,15 @@ public class Document implements DataStorable{
 	
 	private HashMap<String, String> itemData = new HashMap<String, String>();	
 	private File file;
-	private final static String ITEMNAME = "ITEMNAME";
 	public final static String TYPE = "DOCUMENT";
+	final static String ITEMNAME = "ITEMNAME";
 	public final static String ORIGINALLOCATION = "ORIGINALLOCATION";
 	public final static String VERSION = "VERSION";
-	public final static String PARENT = "PARENT";
 	
-	protected Document(String scheduleName, String originalLocation, String itemName, int version){
+	protected Document(String originalLocation, String itemName, int version){
 		itemData.put(ITEMNAME, itemName);
 		itemData.put(ORIGINALLOCATION, originalLocation);
 		itemData.put(VERSION, Integer.toString(version));
-		itemData.put(PARENT, scheduleName);
 	}
 
 	@Override
@@ -33,10 +31,6 @@ public class Document implements DataStorable{
 	@Override
 	public String getItemName() {
 		return itemData.get(ITEMNAME);
-	}
-	
-	public String getParentName() {
-		return itemData.get(PARENT);
 	}
 	
 	//This method needs to be public to allow for manipulation of the document's file by the Filer.

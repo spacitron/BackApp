@@ -13,39 +13,19 @@ public class BackupControl {
 	HashMap<String, Schedule> schedules;
 	FilerFactory filerFac;
 	
+	/**
+	 * This class provides a communication point between the lower layers and the user interface. 
+	 */
 	public BackupControl(){
 		schedules = new HashMap<String, Schedule>();
 		filerFac = FilerFactory.getFilerFactory(); 
 		retrieveSchedules();
 	}
-	
-	public static void main (String[] args){
-		//Name for the backup schedule.
-		String scheduleName = "ciao";
-		//Folder where schedule will create backup directories.
-		String outputPath = "C:\\Users\\paolo\\Desktop";
-		//Path of file to backup.
-		String fileToBackup = "C:\\Users\\paolo\\Desktop\\HeadFirst";
-		//Intervals in milliseconds between backups.
-		long interval = 2000l;
-		//Number of versions to maintain for each file.
-		int versionLimit = 2;
 		
-		//Creates a new controller
-		BackupControl c = new BackupControl();
-		//Creates a new schedule
-		c.addSchedule(scheduleName, outputPath, interval,versionLimit);
-		//Adds file to schedule
-		c.addToSchedule(scheduleName,fileToBackup);
-		//Starts backups
-		c.startSchedule(scheduleName);
-		//Deletes all files and data related to this schedule 
-//		c.deleteSchedule(scheduleName);
-	}
-	
-	
-	
 	/**
+	 * Creates a new backup schedule associate with the appropriate Filer object depending on where the 
+	 * schedule needs to be stored. 
+	 * 
 	 * @param name Unique string that will be used to identify the schedule.
 	 * @param destination Location where files will be saved.
 	 * @param interval Interval - in milliseconds - between backups.
@@ -66,6 +46,8 @@ public class BackupControl {
 	}
 	
 	/**
+	 * Adds files to the backup schedule.
+	 * 
 	 * @param scheduleName Name of existing schedule to which files or directories need to be added for backup
 	 * @param filePaths Absolute paths of files to be added to this schedule.
 	 */
@@ -73,6 +55,14 @@ public class BackupControl {
 		for(String filePath:filePaths){
 			schedules.get(scheduleName).addMaster(filePath);
 		}
+	}
+	
+	/**
+	 * @param scheduleName Name of existing schedule.
+	 * @return Returns data maps of each of the files stored in the backup managed by the named schedule. 
+	 */
+	public ArrayList<HashMap<String, String>> getBackupData(String scheduleName){
+		return schedules.get(scheduleName).getBackupMaps();
 	}
 	
 	/**
@@ -91,9 +81,9 @@ public class BackupControl {
 	}
 
 	/**
-	 * @param scheduleName Name of existing schedule.
-	 * 
 	 * This method will begin periodic backups for the named schedule.
+	 * 
+	 * @param scheduleName Name of existing schedule.
 	 */
 	public void startSchedule(String scheduleName){
 		if(schedules.get(scheduleName).start()){
@@ -103,12 +93,51 @@ public class BackupControl {
 		}
 	}
 	
+	/**
+	 * This method will end the periodic backups for the named schedule.
+	 * 
+	 * @param scheduleName Name of existing schedule.
+	 */
+	public void stopSchedule(String scheduleName){
+		schedules.get(scheduleName).stop();
+	}
+	
 
 	/**
+	 * Removes files from backup schedule.
+	 * 
+	 * @param scheduleName Name of existing schedule.
+	 * @param filePaths Paths of files tracked by above schedule.
+	 */
+	public boolean removeFiles(String scheduleName, String...filePaths){
+		Schedule schedule = schedules.get(scheduleName);
+		for(String path: filePaths){
+			schedule.removeMasterDocument(path);
+		}
+		return false;
+	}
+	
+	/**
+	 * Deletes the selected backups for the named schedule. 
+	 * 
+	 * @param scheduleName Name of existing schedule.
+	 * @param docNames Path of the stored documents to be deleted.
+	 * @return
+	 */
+	public boolean deleteBackups(String scheduleName, String...docNames){
+		Schedule schedule = schedules.get(scheduleName);
+		for(String name:docNames){
+			schedule.deleteStoredDocument(name);
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Deletes a schedule and all files and directories associated with it.
+	 * 
 	 * @param scheduleName Name of schedule to be deleted.
 	 * @return True if all files and folders associated with this schedule have been removed.
-	 * 
-	 * Note, all filed managed by this schedule will be removed once this method is called.
 	 */
 	public boolean deleteSchedule(String scheduleName){
 		if(schedules.get(scheduleName).delete()){
@@ -119,7 +148,7 @@ public class BackupControl {
 	}
 
 	/**
-	 * This helper method re-populates this controller with stored schedules. 
+	 * Helper method that re-populates this controller with stored schedules. 
 	 */
 	private void retrieveSchedules(){
 		ArrayList<Filer> filers = filerFac.retrieveFilers();

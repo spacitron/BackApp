@@ -37,7 +37,7 @@ public class FileSystemFiler implements Filer {
 		new File(dataDest).mkdir();
 		
 		schColumns = new String[] {Schedule.INTERVAL, Schedule.VERSIONLIMIT, Schedule.DATECREATED};
-		docColumns = new String[]{Document.ORIGINALLOCATION, Document.PARENT, Document.VERSION};
+		docColumns = new String[]{Document.ORIGINALLOCATION, Document.VERSION};
 		remoteDataManager = new DataManager(dataDest+"\\"+scheduleName);
 		remoteDataManager.makeTable(Document.TYPE, docColumns);
 		remoteDataManager.makeTable(Schedule.TYPE, schColumns);

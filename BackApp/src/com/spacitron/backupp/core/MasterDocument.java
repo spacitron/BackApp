@@ -12,8 +12,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class MasterDocument extends Document {
 
-	protected MasterDocument(String scheduleName, File file) {
-		super(scheduleName, file.getAbsolutePath(), getHash(file) + file.lastModified(), 0);
+	protected MasterDocument(File file) {
+		super(file.getAbsolutePath(), getHash(file) + file.lastModified(), 0);
 	}
 	
 	/**

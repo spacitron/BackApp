@@ -17,7 +17,8 @@ public class FilerFactory {
 	
 	/**
 	 * This class will manage the creation, storage and retrieval of all types of
-	 * filers used in the system. The constructor method will create the local Filer table.
+	 * Filer objects used in the system. The constructor method will create the local Filer table.
+	 * Remote Schedule tables will be created by the specific filers if and when needed.
 	 */
 	private FilerFactory(){
 		localDataManager = new DataManager("local");
@@ -71,7 +72,6 @@ public class FilerFactory {
 				filers.add(new FileSystemFiler(destination, schedule));
 			}
 		}
-		localDataManager.printData("FILER");
 		return filers;
 	}
 	

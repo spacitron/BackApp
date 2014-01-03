@@ -4,13 +4,15 @@ The following is a list of the most urgent issues in the project:
 			- Schedule cannot be reached.
 			- Backups are found for documents that are no longer tracked by the system.
 
-	2)	Method  Schedule.removeMaterFile() should handle options dealing with backup copies of the master files to be removed.
+	2)	Method  Schedule.removeMasterFile() should handle options dealing with backup copies of the master files to be removed.
 
-	3)	BackupControl needs method to handle deletion of single stored documents. 
-
-	4)	BackupControl needs methods to handle schedule update operations. 
+	3)	BackupControl needs methods to handle schedule update operations. 
 	
-	5)  Needs to handle filers and documents that do not have a local corresponding filer. 
+	4)  Needs to handle filers and documents that do not have a corresponding local filer (so that
+		if the original local database is compromised for some reason the backups can be restored using a
+		fresh instance of the app). 
+	
+	5) Handle exceptions!
 
 
 The following is a list of future nice-haves features for the project:

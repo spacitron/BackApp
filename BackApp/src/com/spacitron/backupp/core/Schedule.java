@@ -1,6 +1,5 @@
 package com.spacitron.backupp.core;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,6 +20,14 @@ public class Schedule implements DataStorable{
 	ArrayList<Integer> workerCount;
 	
 
+	/**
+	 * Creates a backup schedule
+	 * 
+	 * @param name Unique name to be used to identify the backup schedule.
+	 * @param interval Interval between backups in milliseconds.
+	 * @param versionLimit Maximum number of copies of each file to be tracked by this schedule.
+	 * @param filer Filer object that will be responsible for storing data associated with this schedule.
+	 */
 	protected Schedule(String name, Long interval, int versionLimit, Filer filer) {
 		stopped = false;
 		threadCount = Runtime.getRuntime().availableProcessors();
@@ -59,33 +66,8 @@ public class Schedule implements DataStorable{
 		return itemData;
 	}
 
-	protected void stop() {
-		stopped = true;
-	}
-	
-	/**
-	 * @param filePath Absolute path of file or folders to be added to this backup schedule. In case of a folder
-	 * the schedule will backup all the files contained within the folder itself and all its subfolders.
-	 * 
-	 */
-	protected void addMaster(String filePath) {
-		masterDocPaths.add(filePath);
-	}
-
-	protected void removeMasterDocument(String filePath) {
-		for(int i=0; i<masterDocPaths.size(); i++){
-			if(masterDocPaths.get(i).equals(filePath)){
-				masterDocPaths.remove(i);
-			}
-		}
-	}
-	
-	protected void deleteStoredDocument(Document doc){
-		filer.delete(doc);
-	}
-	
-	protected boolean delete(){
-			return 	filer.delete(this);
+	protected ArrayList<HashMap<String, String>> getBackupMaps(){
+		return filer.getDataMaps(Document.TYPE);
 	}
 	
 	
@@ -102,6 +84,40 @@ public class Schedule implements DataStorable{
 		return itemData.get(DATECREATED);
 	}
 	
+	protected void addMaster(String filePath) {
+		masterDocPaths.add(filePath);
+	}
+	
+	protected void removeMasterDocument(String filePath) {
+		for(int i=0; i<masterDocPaths.size(); i++){
+			if(masterDocPaths.get(i).equals(filePath)){
+				masterDocPaths.remove(i);
+			}
+		}
+	}
+	
+	/**
+	 * Adds a file to the backup schedule.
+	 * 
+	 * @param filePath Absolute path of file or folders to be added to this backup schedule. In case of a folder
+	 * the schedule will backup all the files contained within the folder itself and all its subfolders.
+	 * 
+	 */
+	protected void deleteStoredDocument(String name){
+		HashMap<String, String> map = filer.getDataMap(Document.TYPE, name);
+		Document doc = new Document(map.get(Document.ORIGINALLOCATION), name, Integer.valueOf(map.get(Document.VERSION)));
+		filer.delete(doc);
+	}
+	
+	/**
+	 * Deletes all data, files and directories associated with this schedule.
+	 * 
+	 * @return True on successful deletion.
+	 */
+	protected boolean delete(){
+		return 	filer.delete(this);
+	}
+
 	protected boolean start() {
 		if(masterDocPaths.size()==0){
 			return false;
@@ -113,10 +129,7 @@ public class Schedule implements DataStorable{
 			public void run() {
 				while (stopped == false) {
 					int versionLim = getVersionLimit();
-					ArrayList<HashMap<String, String>> dataMaps = filer.getDataMaps(Document.TYPE);
-					ArrayList<Document> storedDocuments = makeStoredDocuments(dataMaps);
-					ArrayList<MasterDocument> masterDocuments = getMasterDocuments(masterDocPaths);
-					ArrayList<Document> docList = groupDocuments(masterDocuments, storedDocuments);
+					ArrayList<Document> docList = ScheduleHelper.groupDocsForBackup(filer.getDataMaps(Document.TYPE), masterDocPaths);
 					Thread[] workerThreads = setThreads(docList, filer, versionLim);
 					for (Thread workerThread : workerThreads) {
 						workerThread.start();
@@ -133,72 +146,11 @@ public class Schedule implements DataStorable{
 		return true;
 	}
 	
-	
-	/**
-	 * @param paths Absolute paths of files and folders than need backing up.
-	 * @return Returns a list of documents from the sources assigned to backup. This method will automatically clear out the sources that are 
-	 * no longer available.
-	 */
-	private ArrayList<MasterDocument> getMasterDocuments(ArrayList<String> paths){
-		ArrayList<MasterDocument> masterDocuments = new ArrayList<>();
-		ArrayList<String> invalidPaths = new ArrayList<>();
-		for(String path: paths){
-			File file = new File(path);
-			System.out.println(path+ " Exists: "+ file.exists());
-			if(file.isFile()){
-				masterDocuments.add(new MasterDocument(getItemName(), file));
-			}else if(file.isDirectory()){
-				ArrayList <String> dirPath = new ArrayList<String>();
-				for(File f:file.listFiles()){
-					dirPath.add(f.getAbsolutePath());
-				}
-				masterDocuments.addAll(getMasterDocuments(dirPath));
-			}else if(!file.exists()){
-				invalidPaths.add(path);
-			}
-		}
-		paths.removeAll(invalidPaths);
-		return masterDocuments;
+	protected void stop() {
+		stopped = true;
 	}
 	
-	
-	 private ArrayList<Document> makeStoredDocuments(ArrayList<HashMap<String, String>> dataMaps) {
-			ArrayList<Document> docs = new ArrayList<Document>();
-			for (HashMap<String, String> map : dataMaps) {
-				String parent = getItemName();
-				String originalLocation = map.get(Document.ORIGINALLOCATION);
-				String itemName = map.get(ITEMNAME);
-				int version = Integer.valueOf(map.get(Document.VERSION));
-				Document doc = new Document(parent, originalLocation, itemName, version); 
-				docs.add(doc);
-			}
-			return docs;
-		}
-		
-		
-		private ArrayList<Document> groupDocuments(ArrayList<MasterDocument> masterDocs, ArrayList<Document> storedDocs) {
-			ArrayList<Document> docList = new ArrayList<>();
-			for (Document masterDoc : masterDocs) {
-				boolean needsBackup = true;
-				ArrayList<Document>	tempList = new ArrayList<>();
-				tempList.add(masterDoc);
-				
-				for(Document storedDoc:storedDocs){
-					if(storedDoc.isBackupOf(masterDoc)){
-						tempList.add(storedDoc);
-					}
-					if(storedDoc.equals(masterDoc)){
-						needsBackup = false;
-					}
-				}
-				if(needsBackup){
-					docList.addAll(tempList);
-				}
-			}
-			return docList;
-		}
-
-		private Thread[] setThreads(ArrayList<Document> docList, Filer filer, int versionLimit) {
+	private Thread[] setThreads(ArrayList<Document> docList, Filer filer, int versionLimit) {
 			threadCount = Runtime.getRuntime().availableProcessors();
 			//Checks that there are enough documents for each thread so that no threads are created if they have
 			//no work to do.
