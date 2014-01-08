@@ -40,7 +40,6 @@ public class Schedule implements DataStorable{
 		itemData.put(VERSIONLIMIT, String.valueOf(versionLimit));
 		itemData.put(DATECREATED, String.valueOf(System.currentTimeMillis()));
 		this.filer = filer;
-		
 		//Saves this schedule
 		filer.store(this);
 		

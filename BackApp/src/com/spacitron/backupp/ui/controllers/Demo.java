@@ -1,4 +1,5 @@
-package com.spacitron.backupp.ui;
+package com.spacitron.backupp.ui.controllers;
+/*package com.spacitron.backupp.controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class Demo {
 		control = new BackupControl();
 	}
 	
-	public static void main(String[] args){
+//	public static void main(String[] args){
 
 		//Fill in path to where the demo should create the backup directories.
 		String demoDestination = "";
@@ -34,7 +35,7 @@ public class Demo {
 		//Deletes the demo schedule. 
 //		demo.deleteSchedule();
 		
-	}
+//	}
 	
 	public void createAndStartSchedule(String name, String destination, String...filePath){
 		control.addSchedule(name, destination, 3000l,2);
@@ -65,3 +66,5 @@ public class Demo {
 	
 
 }
+
+*/

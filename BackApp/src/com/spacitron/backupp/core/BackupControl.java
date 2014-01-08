@@ -12,6 +12,7 @@ public class BackupControl {
 	
 	HashMap<String, Schedule> schedules;
 	FilerFactory filerFac;
+	ArrayList<String> scheduleNames;
 	
 	/**
 	 * This class provides a communication point between the lower layers and the user interface. 
@@ -20,6 +21,11 @@ public class BackupControl {
 		schedules = new HashMap<String, Schedule>();
 		filerFac = FilerFactory.getFilerFactory(); 
 		retrieveSchedules();
+		scheduleNames = new ArrayList<>();
+	}
+	
+	public ArrayList<String> getScheduleNames(){
+		return scheduleNames;
 	}
 		
 	/**
@@ -41,6 +47,7 @@ public class BackupControl {
 			return false;
 		}
 		Schedule schedule = new Schedule(name, interval, versionLimit, filer);
+		scheduleNames.add(name);
 		schedules.put(name, schedule);
 		return true;
 	}
