@@ -3,16 +3,17 @@ package com.spacitron.backupp.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 class ScheduleHelper {
 	
-	@SuppressWarnings("unused")
-	private void ScheduleHelper(){
+	private ScheduleHelper(){
 	}
 	
 	
 	
-	protected static ArrayList<Document> groupDocsForBackup(ArrayList<HashMap<String, String>> dataMaps, ArrayList<String> masterDocPaths){
+	protected static ArrayList<Document> groupDocsForBackup(ArrayList<HashMap<String, String>> dataMaps, Set<String> masterDocPaths){
 		ArrayList<Document> storedDocuments = makeStoredDocuments(dataMaps);
 		ArrayList<MasterDocument> masterDocuments = getMasterDocuments(masterDocPaths);
 		return groupDocuments(masterDocuments, storedDocuments);
@@ -25,7 +26,7 @@ class ScheduleHelper {
 	 * @return Returns a list of documents from the sources assigned to backup. This method will automatically clear out the sources that are 
 	 * no longer available.
 	 */
-	private static ArrayList<MasterDocument> getMasterDocuments(ArrayList<String> paths){
+	private static ArrayList<MasterDocument> getMasterDocuments(Set<String> paths){
 		ArrayList<MasterDocument> masterDocuments = new ArrayList<>();
 		ArrayList<String> invalidPaths = new ArrayList<>();
 		for(String path: paths){
@@ -33,7 +34,7 @@ class ScheduleHelper {
 			if(file.isFile()){
 				masterDocuments.add(new MasterDocument(file));
 			}else if(file.isDirectory()){
-				ArrayList <String> dirPath = new ArrayList<String>();
+				Set <String> dirPath = new TreeSet<>();
 				for(File f:file.listFiles()){
 					dirPath.add(f.getAbsolutePath());
 				}

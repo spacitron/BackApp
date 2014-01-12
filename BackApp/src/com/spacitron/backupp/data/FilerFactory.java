@@ -3,8 +3,6 @@ package com.spacitron.backupp.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.spacitron.backupp.core.Filer;
-
 public class FilerFactory {
 	
 	public static final String TYPE = "FILER";

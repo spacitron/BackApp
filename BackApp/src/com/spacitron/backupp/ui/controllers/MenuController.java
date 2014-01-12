@@ -4,20 +4,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 	
-public class MenuController implements Initializable{
+public class MenuController  extends BorderPane implements Initializable{
 	@FXML
 	private BorderPane borderPaneMain;
 	
@@ -29,55 +25,87 @@ public class MenuController implements Initializable{
 	
 	@FXML
 	private Menu menuFile;
+	@FXML
+	private Menu menuEdit;
+	@FXML
+	protected static MenuItem itemNewBackup;
+	@FXML
+	protected static MenuItem itemEdit;
+	@FXML
+	protected static MenuItem itemProperties;
+	@FXML
+	protected static MenuItem itemDelete;
+	@FXML
+	protected static MenuItem itemRemoveFile;
 	
 	public MenuController(){
 	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		menuFile.getItems().add(menuItem("Backups"));
-		menuFile.getItems().add(menuItem("New Backup"));
-	}
-	
-	private MenuItem menuItem(String g){
-		final MenuItem item = new MenuItem(g);
-		//ID will be used so that languages can be switched 
-		item.setId(g);
-		item.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				try {
-					openView(item.getId());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}				
-			}
-		});
-		return item;
-	}
-	
-	
-	private void openView(String name) throws IOException{
-		AnchorPane anchor = null;
-		switch(name){
-			case"Backups":
-				anchor =(AnchorPane) new FXMLLoader().load(getClass().getResource("views/ScheduleView.fxml"));
-				break;
-			case "New Backup":
-				//This will open as a dialog and does not neecd to be added to the BorderPane
-				AnchorPane dialog = (AnchorPane) new FXMLLoader().load(getClass().getResource("views/MakeScheduleView.fxml"));
-				Scene s = new Scene(dialog);
-				Stage stage = new Stage();
-				stage.setScene(s);
-				stage.show();
-				break;
-		}
-		
-		if(anchor!=null){
-		borderPaneMain.getChildren().add(anchor);
-		borderPaneMain.getChildren().remove(anchorPaneMain);
+		try {
+			AnchorPane anchor = (AnchorPane) new FXMLLoader().load(getClass().getResource("views/ScheduleView.fxml"));
+			borderPaneMain.setCenter(anchor);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
+	@FXML
+	private void onMakeShcedule(){
+		try {
+			new FXMLLoader().load(getClass().getResource("views/MakeScheduleView.fxml"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//This will be used to display the edit views
+	@FXML
+	private void onEditClick(){
+	}
+	
+	//This will be used to display the property views
+	@FXML
+	private void onPropertiesClick(){
+	}
+	
+	//This will be used to delete stuff
+	@FXML
+	private void onDeleteClick(){
+		ScheduleViewController.deleteSelected();
+	}
+	
+	@FXML
+	private void onRemoveFileClick(){
+		ScheduleViewController.removeSelectedFile();
+	}
+	
+	protected static void setEnableEdit(){
+		itemEdit.setDisable(false);
+	}
+	
+	protected static void setDisableEdit(){
+		itemEdit.setDisable(true);
+	}
+	protected static void setEnableProperties(){
+		itemProperties.setDisable(false);
+	}
+	protected static void setDisableProperties(){
+		itemProperties.setDisable(true);
+	}
+	protected static void setEnableDelete(){
+		itemDelete.setDisable(false);
+	}
+	
+	protected static void setDisableDelete(){
+		itemDelete.setDisable(true);
+	}
+	protected static void setDisableFileRemove(){
+		itemRemoveFile.setDisable(true);
+	}
+	protected static void setEnableFileRemove(){
+		itemRemoveFile.setDisable(false);
+	}
 }

@@ -2,6 +2,11 @@ package com.spacitron.backupp.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.spacitron.backupp.data.DataStorable;
+import com.spacitron.backupp.data.Filer;
 
 
 public class Schedule implements DataStorable{
@@ -11,10 +16,11 @@ public class Schedule implements DataStorable{
 	public static final String INTERVAL = "INTERVAL";
 	public static final String DATECREATED = "DATECREATED";
 	public static final String TYPE = "SCHEDULE";
+	public static final String DESTINATION = "DESTINATION";
 	
 	private HashMap<String, String> itemData;
-	private ArrayList<String> masterDocPaths;
-	private boolean stopped;
+	private Set<String> masterDocPaths;
+	private boolean started;
 	private Filer filer;
 	private int threadCount;
 	ArrayList<Integer> workerCount;
@@ -29,9 +35,9 @@ public class Schedule implements DataStorable{
 	 * @param filer Filer object that will be responsible for storing data associated with this schedule.
 	 */
 	protected Schedule(String name, Long interval, int versionLimit, Filer filer) {
-		stopped = false;
+		started = false;
 		threadCount = Runtime.getRuntime().availableProcessors();
-		masterDocPaths = new ArrayList<>();
+		masterDocPaths = new TreeSet<>();
 		
 		//All data that needs to be stored for this DataStorable object need to go in the itemData map
 		itemData = new HashMap<String, String>();
@@ -39,8 +45,10 @@ public class Schedule implements DataStorable{
 		itemData.put(INTERVAL, String.valueOf(interval));
 		itemData.put(VERSIONLIMIT, String.valueOf(versionLimit));
 		itemData.put(DATECREATED, String.valueOf(System.currentTimeMillis()));
-		this.filer = filer;
+		itemData.put(DESTINATION, filer.getDestination());
+
 		//Saves this schedule
+		this.filer = filer;
 		filer.store(this);
 		
 		//Repopulates backup file list
@@ -63,6 +71,11 @@ public class Schedule implements DataStorable{
 	@Override
 	public HashMap<String, String> getData(){
 		return itemData;
+	}
+	
+	
+	protected Set<String> getMasterDocuments(){
+		return masterDocPaths;
 	}
 
 	protected ArrayList<HashMap<String, String>> getBackupMaps(){
@@ -88,11 +101,7 @@ public class Schedule implements DataStorable{
 	}
 	
 	protected void removeMasterDocument(String filePath) {
-		for(int i=0; i<masterDocPaths.size(); i++){
-			if(masterDocPaths.get(i).equals(filePath)){
-				masterDocPaths.remove(i);
-			}
-		}
+		masterDocPaths.remove(filePath);
 	}
 	
 	/**
@@ -118,7 +127,9 @@ public class Schedule implements DataStorable{
 	}
 
 	protected boolean start() {
+		started = true;
 		if(masterDocPaths.size()==0){
+			started = false;
 			return false;
 		}
 		new Thread(new Runnable() {
@@ -126,7 +137,7 @@ public class Schedule implements DataStorable{
 			@Override
 			//
 			public void run() {
-				while (stopped == false) {
+				while (started) {
 					int versionLim = getVersionLimit();
 					ArrayList<Document> docList = ScheduleHelper.groupDocsForBackup(filer.getDataMaps(Document.TYPE), masterDocPaths);
 					Thread[] workerThreads = setThreads(docList, filer, versionLim);
@@ -146,9 +157,13 @@ public class Schedule implements DataStorable{
 	}
 	
 	protected void stop() {
-		stopped = true;
+		started = false;
 	}
 	
+	protected boolean isStarted(){
+		return started;
+	}
+
 	private Thread[] setThreads(ArrayList<Document> docList, Filer filer, int versionLimit) {
 			threadCount = Runtime.getRuntime().availableProcessors();
 			//Checks that there are enough documents for each thread so that no threads are created if they have

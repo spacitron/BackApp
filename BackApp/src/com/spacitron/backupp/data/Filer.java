@@ -1,4 +1,4 @@
-package com.spacitron.backupp.core;
+package com.spacitron.backupp.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +11,7 @@ import java.util.HashMap;
  */
 public interface Filer {
 	
+	public String getDestination();
 	public boolean store(ArrayList<DataStorable> dataStorables);
 	public boolean store(DataStorable dataStorable);
 	public boolean delete(DataStorable dataStorable);

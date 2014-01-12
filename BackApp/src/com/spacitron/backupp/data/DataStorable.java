@@ -1,4 +1,4 @@
-package com.spacitron.backupp.core;
+package com.spacitron.backupp.data;
 
 import java.util.HashMap;
 

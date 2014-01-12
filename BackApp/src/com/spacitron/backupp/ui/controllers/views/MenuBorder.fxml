@@ -13,7 +13,19 @@
   <top>
     <MenuBar fx:id="menuBar">
       <menus>
-        <Menu mnemonicParsing="false" text="File" fx:id="menuFile" />
+        <Menu mnemonicParsing="false" text="File" fx:id="menuFile">
+          <items>
+            <MenuItem disable="false" mnemonicParsing="false" onAction="#onMakeShcedule" text="New Backup" fx:id="itemNewBackup" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#onPropertiesClick" text="Properties" fx:id="itemProperties" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#onRemoveFileClick" text="Remove File" fx:id="itemRemoveFile" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#onDeleteClick" text="Delete" fx:id="itemDelete" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit" fx:id="menuEdit">
+          <items>
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#onEditClick" text="Edit" fx:id="itemEdit" />
+          </items>
+        </Menu>
       </menus>
     </MenuBar>
   </top>

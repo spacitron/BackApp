@@ -7,9 +7,7 @@ import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 
-import com.spacitron.backupp.core.DataStorable;
 import com.spacitron.backupp.core.Document;
-import com.spacitron.backupp.core.Filer;
 import com.spacitron.backupp.core.Schedule;
 
 public class FileSystemFiler implements Filer {
@@ -36,11 +34,16 @@ public class FileSystemFiler implements Filer {
 		new File(docDest).mkdir();
 		new File(dataDest).mkdir();
 		
-		schColumns = new String[] {Schedule.INTERVAL, Schedule.VERSIONLIMIT, Schedule.DATECREATED};
+		schColumns = new String[] {Schedule.INTERVAL, Schedule.VERSIONLIMIT, Schedule.DESTINATION, Schedule.DATECREATED};
 		docColumns = new String[]{Document.ORIGINALLOCATION, Document.VERSION};
 		remoteDataManager = new DataManager(dataDest+"\\"+scheduleName);
 		remoteDataManager.makeTable(Document.TYPE, docColumns);
 		remoteDataManager.makeTable(Schedule.TYPE, schColumns);
+	}
+	
+	@Override
+	public String getDestination(){
+		return dest;
 	}
 	
 	

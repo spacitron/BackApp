@@ -3,6 +3,8 @@ package com.spacitron.backupp.core;
 import java.io.File;
 import java.util.HashMap;
 
+import com.spacitron.backupp.data.DataStorable;
+
 public class Document implements DataStorable{
 	
 	private HashMap<String, String> itemData = new HashMap<String, String>();	

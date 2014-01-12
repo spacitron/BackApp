@@ -3,28 +3,26 @@ package com.spacitron.backupp.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import com.spacitron.backupp.data.FileSystemFiler;
+import com.spacitron.backupp.data.Filer;
 import com.spacitron.backupp.data.FilerFactory;
 
-public class BackupControl {
+public class BackupManager {
 
 	
-	HashMap<String, Schedule> schedules;
-	FilerFactory filerFac;
-	ArrayList<String> scheduleNames;
+	static ArrayList<String> scheduleNames = new ArrayList<>();
+	static FilerFactory filerFac = FilerFactory.getFilerFactory();
+	static HashMap<String, Schedule> schedules = retrieveSchedules();
 	
 	/**
 	 * This class provides a communication point between the lower layers and the user interface. 
 	 */
-	public BackupControl(){
-		schedules = new HashMap<String, Schedule>();
-		filerFac = FilerFactory.getFilerFactory(); 
-		retrieveSchedules();
-		scheduleNames = new ArrayList<>();
+	private BackupManager(){
 	}
 	
-	public ArrayList<String> getScheduleNames(){
+	public static ArrayList<String> getScheduleNames(){
 		return scheduleNames;
 	}
 		
@@ -38,7 +36,10 @@ public class BackupControl {
 	 * @param versionLimit Maximum number of copies for each file managed by this schedule.
 	 * @return Returns false if the output destination selected cannot be reached.
 	 */
-	public boolean addSchedule(String name, String destination, long interval, int versionLimit){
+	public static boolean addSchedule(String name, String destination, long interval, int versionLimit){
+		if(scheduleNames.contains(name)){
+			return false;
+		}
 		Filer filer;
 		//Other checks will be performed here to decide what type of filer to request.
 		if(new File(destination).isDirectory()){
@@ -58,17 +59,21 @@ public class BackupControl {
 	 * @param scheduleName Name of existing schedule to which files or directories need to be added for backup
 	 * @param filePaths Absolute paths of files to be added to this schedule.
 	 */
-	public void addToSchedule(String scheduleName, String... filePaths){
+	public static void addToSchedule(String scheduleName, String... filePaths){
 		for(String filePath:filePaths){
 			schedules.get(scheduleName).addMaster(filePath);
 		}
+	}
+	
+	public static boolean scheduleIsStared(String scheduleName){
+		return schedules.get(scheduleName).isStarted();
 	}
 	
 	/**
 	 * @param scheduleName Name of existing schedule.
 	 * @return Returns data maps of each of the files stored in the backup managed by the named schedule. 
 	 */
-	public ArrayList<HashMap<String, String>> getBackupData(String scheduleName){
+	public static ArrayList<HashMap<String, String>> getBackupData(String scheduleName){
 		return schedules.get(scheduleName).getBackupMaps();
 	}
 	
@@ -76,12 +81,12 @@ public class BackupControl {
 	 * @param scheduleName Name of the schedule for which data is requested.
 	 * @return Data map for display purposes.
 	 */
-	public HashMap<String, String> getScheduleData(String scheduleName){
+	public static HashMap<String, String> getScheduleData(String scheduleName){
 		return schedules.get(scheduleName).getData();		
 	}
 	
 	//This method needs to be overloaded in order to give the user the opportunity to decide what to do with the stored files
-	public void removeFilesFromSchedule(String scheduleName, String... filePaths){
+	public static void removeFilesFromSchedule(String scheduleName, String... filePaths){
 		for(String filePath:filePaths){
 			schedules.get(scheduleName).removeMasterDocument(filePath);
 		}
@@ -92,12 +97,8 @@ public class BackupControl {
 	 * 
 	 * @param scheduleName Name of existing schedule.
 	 */
-	public void startSchedule(String scheduleName){
-		if(schedules.get(scheduleName).start()){
-			System.out.println("Started");
-		}else{
-			System.out.println("Not Started");
-		}
+	public static boolean startSchedule(String scheduleName){
+		return schedules.get(scheduleName).start();
 	}
 	
 	/**
@@ -105,8 +106,12 @@ public class BackupControl {
 	 * 
 	 * @param scheduleName Name of existing schedule.
 	 */
-	public void stopSchedule(String scheduleName){
+	public static void stopSchedule(String scheduleName){
 		schedules.get(scheduleName).stop();
+	}
+	
+	public static Set<String> getMasterDocuments(String scheduleName){
+		return schedules.get(scheduleName).getMasterDocuments();
 	}
 	
 
@@ -116,7 +121,7 @@ public class BackupControl {
 	 * @param scheduleName Name of existing schedule.
 	 * @param filePaths Paths of files tracked by above schedule.
 	 */
-	public boolean removeFiles(String scheduleName, String...filePaths){
+	public static boolean removeFiles(String scheduleName, String...filePaths){
 		Schedule schedule = schedules.get(scheduleName);
 		for(String path: filePaths){
 			schedule.removeMasterDocument(path);
@@ -131,7 +136,7 @@ public class BackupControl {
 	 * @param docNames Path of the stored documents to be deleted.
 	 * @return
 	 */
-	public boolean deleteBackups(String scheduleName, String...docNames){
+	public static boolean deleteBackups(String scheduleName, String...docNames){
 		Schedule schedule = schedules.get(scheduleName);
 		for(String name:docNames){
 			schedule.deleteStoredDocument(name);
@@ -146,7 +151,7 @@ public class BackupControl {
 	 * @param scheduleName Name of schedule to be deleted.
 	 * @return True if all files and folders associated with this schedule have been removed.
 	 */
-	public boolean deleteSchedule(String scheduleName){
+	public static boolean deleteSchedule(String scheduleName){
 		if(schedules.get(scheduleName).delete()){
 			filerFac.deleteFiler(scheduleName);
 			return true;
@@ -157,7 +162,8 @@ public class BackupControl {
 	/**
 	 * Helper method that re-populates this controller with stored schedules. 
 	 */
-	private void retrieveSchedules(){
+	private static HashMap<String, Schedule> retrieveSchedules(){
+		HashMap<String, Schedule> schedules = new HashMap<>();
 		ArrayList<Filer> filers = filerFac.retrieveFilers();
 		for(Filer filer: filers){
 			ArrayList<HashMap<String,String>> maps = filer.getDataMaps(Schedule.TYPE);
@@ -168,7 +174,9 @@ public class BackupControl {
 				int versionLimit = Integer.valueOf(map.get(Schedule.VERSIONLIMIT));
 				Schedule schedule =  new Schedule(name, interval, versionLimit, filer);
 				schedules.put(name, schedule);
+				scheduleNames.add(name);
 			}
 		}
+		return schedules;
 	}
 }

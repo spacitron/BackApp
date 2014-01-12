@@ -6,9 +6,45 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.spacitron.backupp.ui.controllers.ScheduleViewController">
+<AnchorPane id="AnchorPane" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.spacitron.backupp.ui.controllers.ScheduleViewController">
   <children>
-    <Accordion fx:id="scheduleAccordion" expandedPane="$null" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-    <Label layoutX="182.0" layoutY="200.0" prefWidth="266.0" text="View your schedules here" />
+    <SplitPane dividerPositions="0.46153846153846156" focusTraversable="true" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="-2.0">
+      <items>
+        <AnchorPane minHeight="0.0" minWidth="100.0" prefHeight="160.0" prefWidth="100.0">
+          <children>
+            <SplitPane dividerPositions="0.601010101010101" focusTraversable="true" minWidth="-1.0" orientation="VERTICAL" prefHeight="398.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="218.0" prefWidth="271.0">
+                  <children>
+                    <ListView fx:id="listScheduleNames" onMouseClicked="#onScheduleSelected" prefHeight="195.0" prefWidth="254.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  </children>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="175.0" prefWidth="271.0">
+                  <children>
+                    <ScrollPane content="$null" prefHeight="155.0" prefWidth="271.0" vbarPolicy="AS_NEEDED" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <Label fx:id="labelDestCap" layoutX="11.0" layoutY="10.0" text="Location:" visible="false" />
+                    <Label fx:id="labelVersionCap" layoutX="10.0" layoutY="36.0" prefWidth="84.0" text="File versions:" visible="false" />
+                    <Label fx:id="labelIntervalCap" layoutX="10.0" layoutY="62.0" text="Backup interval:" visible="false" />
+                    <Label fx:id="labelDest" layoutX="112.0" layoutY="10.0" text="" />
+                    <Label fx:id="labelVersion" layoutX="112.0" layoutY="36.0" text="" />
+                    <Label fx:id="labelInterval" layoutX="112.0" layoutY="62.0" text="" />
+                    <Label fx:id="labelDateCreatedCap" layoutX="10.0" layoutY="90.0" text="Created on:" visible="false" />
+                    <Label id="labelInterval" fx:id="labelDateCreated" layoutX="112.0" layoutY="90.0" text="" />
+                    <Button fx:id="buttonStartSchedule" layoutX="10.0" layoutY="113.0" mnemonicParsing="false" onAction="#startSchedule" text="Start" visible="false" />
+                    <Button fx:id="buttonStopSchedule" layoutX="84.0" layoutY="113.0" mnemonicParsing="false" onAction="#stopSchedule" text="Stop" visible="false" />
+                    <Label fx:id="labelScheduleEmpty" layoutX="11.0" layoutY="139.0" prefWidth="271.0" text="Please add files before starting this backup" textFill="RED" visible="false" />
+                  </children>
+                </AnchorPane>
+              </items>
+            </SplitPane>
+          </children>
+        </AnchorPane>
+        <AnchorPane minHeight="-1.0" minWidth="300.0" prefHeight="160.0" prefWidth="300.0">
+          <children>
+            <ListView fx:id="listDocNames" onMouseClicked="#onDocumentSelected" prefHeight="398.0" prefWidth="319.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
   </children>
 </AnchorPane>
