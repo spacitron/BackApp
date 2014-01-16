@@ -1,19 +1,25 @@
 package com.spacitron.backupp.ui.controllers;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import com.spacitron.backupp.core.BackupManager;
 import com.spacitron.backupp.core.Schedule;
@@ -23,10 +29,13 @@ public class ScheduleViewController implements Initializable{
 	protected static final String SCHEDULE = "SCHEDULE";
 	protected static final String DOCUMENT = "DOCUMENT";
 	private static String selection;
+	
+	//Static variables will hold the names of backup schedule and file currently selected
 	private static String scheduleName;
 	private static String docName;
 	
 	BackupManager bc;
+	private FileChooser fileChooser;
 	static ObservableList<String> scheduleList;
 	static ObservableList<String> docNamesList;
 	
@@ -49,6 +58,8 @@ public class ScheduleViewController implements Initializable{
 	@FXML
 	private static Label labelDateCreatedCap;
 	@FXML
+	private static Label labelNoScheduleErr;
+	@FXML
 	private static ListView<String> listScheduleNames;
 	@FXML
 	private static ListView<String> listDocNames;
@@ -56,6 +67,8 @@ public class ScheduleViewController implements Initializable{
 	private static Button buttonStartSchedule;
 	@FXML
 	private static Button buttonStopSchedule;
+	@FXML
+	private static Button buttonAddFiles;
 	
 	public ScheduleViewController(){
 		BackupManager.addSchedule("ciao", "C:\\Users\\paolo\\Desktop", 1000l, 3);
@@ -66,6 +79,7 @@ public class ScheduleViewController implements Initializable{
 		selection = new String();
 		scheduleName = new String();
 		docName = new String();
+		fileChooser = new FileChooser();
 	}
 	
 	@Override
@@ -77,9 +91,12 @@ public class ScheduleViewController implements Initializable{
 	
 	@FXML
 	private void onScheduleSelected(){
+		//Disables menu actions performed on files
 		MenuController.setDisableFileRemove();
+		
 		//Sets the current item on which menu operations will be performed
 		if((scheduleName = listScheduleNames.getSelectionModel().getSelectedItem())!=null){
+			labelNoScheduleErr.setVisible(false);
 			selection = SCHEDULE;
 			scheduleName = listScheduleNames.getSelectionModel().getSelectedItem();
 			initializeInfoLabels();
@@ -127,6 +144,28 @@ public class ScheduleViewController implements Initializable{
 		buttonStopSchedule.setDisable(true);
 	}
 	
+	@FXML
+	private void addFiles(){
+		//Checks that a schedule is selected to add files to
+		if(scheduleName.length()<1){
+			labelNoScheduleErr.setVisible(true);
+			return;
+		}
+		Stage stageFileChooser = new Stage();
+		fileChooser.setTitle("Select files for backup");
+		List<File> files = fileChooser.showOpenMultipleDialog(stageFileChooser);
+		if(!(files == null)){
+			for(File file:files){
+				if(!docNamesList.contains(file)){
+					String filePath = file.getAbsolutePath();
+					BackupManager.addToSchedule(scheduleName, filePath);
+					fileChooser.setInitialDirectory(files.get(0).getParentFile());
+					docNamesList.add(filePath);
+				}
+			}
+		}
+	}
+	
 	protected static void addSchedule(String scheduleName){
 		scheduleList.add(scheduleName);
 		Collections.sort(scheduleList);
@@ -139,6 +178,21 @@ public class ScheduleViewController implements Initializable{
 		String doc = listDocNames.getSelectionModel().getSelectedItem();
 		BackupManager.removeFilesFromSchedule(scheduleName, doc);
 		docNamesList.remove(doc);
+	}
+
+	public static void editSelected() {
+		if(selection.equals(SCHEDULE)){
+			try {
+				ScheduleEditController.setScheduleName(scheduleName);
+				new FXMLLoader().load(ScheduleViewController.class.getResource("views/ScheduleEditView.fxml"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}else if(selection.equals(DOCUMENT)){
+			
+		}
 	}
 
 	//Will need to ask for confirmation first
@@ -188,7 +242,7 @@ public class ScheduleViewController implements Initializable{
 	private void setInfoLabels(String scheduleName){
 		HashMap<String, String> map = BackupManager.getScheduleData(scheduleName);
 		labelDest.setText(map.get(Schedule.DESTINATION));
-		labelInterval.setText(map.get(Schedule.INTERVAL));
+		labelInterval.setText(getTimeLabel(map.get(Schedule.INTERVAL)));
 		labelVersion.setText(map.get(Schedule.VERSIONLIMIT));
 		String dateString = map.get(Schedule.DATECREATED);
 		Date date = new Date(Long.valueOf(dateString));
@@ -197,7 +251,7 @@ public class ScheduleViewController implements Initializable{
 	}
 	
 	private void setStartStopButtons(String scheduleName){
-		if(BackupManager.scheduleIsStared(scheduleName)){
+		if(BackupManager.scheduleIsStarted(scheduleName)){
 			buttonStartSchedule.setDisable(true);
 			buttonStopSchedule.setDisable(false);
 		}else{
@@ -205,6 +259,22 @@ public class ScheduleViewController implements Initializable{
 			buttonStopSchedule.setDisable(true);
 		}
 	}
+	
+	private String getTimeLabel(String interval){
+		long time = Long.valueOf(interval);
+		long g = 0;
+		if((g =time/86400000)>1 && g%1 ==0){
+			return g+ " days";
+		}
+		if((g =time/3600000)>1 && g %1 == 0){
+			return g+ " hours";
+		}
+		if((g =time/60000)>1 && g %1 ==0){
+			return g+ " minutes";
+		}
+		return null;
+	}
+
 	
 	
 

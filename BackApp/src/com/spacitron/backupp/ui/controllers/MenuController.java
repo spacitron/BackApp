@@ -56,7 +56,6 @@ public class MenuController  extends BorderPane implements Initializable{
 		try {
 			new FXMLLoader().load(getClass().getResource("views/MakeScheduleView.fxml"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -64,6 +63,7 @@ public class MenuController  extends BorderPane implements Initializable{
 	//This will be used to display the edit views
 	@FXML
 	private void onEditClick(){
+		ScheduleViewController.editSelected();
 	}
 	
 	//This will be used to display the property views

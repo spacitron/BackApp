@@ -65,7 +65,7 @@ public class BackupManager {
 		}
 	}
 	
-	public static boolean scheduleIsStared(String scheduleName){
+	public static boolean scheduleIsStarted(String scheduleName){
 		return schedules.get(scheduleName).isStarted();
 	}
 	
@@ -91,7 +91,15 @@ public class BackupManager {
 			schedules.get(scheduleName).removeMasterDocument(filePath);
 		}
 	}
+	
+	public static void setScheduleInterval(String scheduleName, long interval){
+		schedules.get(scheduleName).setInterval(interval);
+	}
 
+	public static void setScheduleVersionLimit(String scheduleName, int limit){
+		schedules.get(scheduleName).setVerionLimit(limit);
+	}
+	
 	/**
 	 * This method will begin periodic backups for the named schedule.
 	 * 

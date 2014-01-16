@@ -73,6 +73,15 @@ public class Schedule implements DataStorable{
 		return itemData;
 	}
 	
+	protected void setVerionLimit(int newVerLimit){
+		itemData.remove(VERSIONLIMIT);
+		itemData.put(VERSIONLIMIT, String.valueOf(newVerLimit));
+	}
+	
+	protected void setInterval(long newInterval){
+		itemData.remove(INTERVAL);
+		itemData.put(INTERVAL, String.valueOf(newInterval));
+	}
 	
 	protected Set<String> getMasterDocuments(){
 		return masterDocPaths;
@@ -82,19 +91,6 @@ public class Schedule implements DataStorable{
 		return filer.getDataMaps(Document.TYPE);
 	}
 	
-	
-	protected int getVersionLimit(){
-		int v = Integer.valueOf(itemData.get(VERSIONLIMIT));
-		return v;
-	}
-	protected long getInterval(){
-		long i = Long.valueOf(itemData.get(INTERVAL));
-		return i;
-	}
-	
-	protected String getDateCreated(){
-		return itemData.get(DATECREATED);
-	}
 	
 	protected void addMaster(String filePath) {
 		masterDocPaths.add(filePath);
@@ -138,14 +134,14 @@ public class Schedule implements DataStorable{
 			//
 			public void run() {
 				while (started) {
-					int versionLim = getVersionLimit();
+					int versionLim = Integer.valueOf(itemData.get(VERSIONLIMIT));
 					ArrayList<Document> docList = ScheduleHelper.groupDocsForBackup(filer.getDataMaps(Document.TYPE), masterDocPaths);
 					Thread[] workerThreads = setThreads(docList, filer, versionLim);
 					for (Thread workerThread : workerThreads) {
 						workerThread.start();
 					}
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(Long.valueOf(itemData.get(INTERVAL)));
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -192,7 +188,7 @@ public class Schedule implements DataStorable{
 		private int versionLimit;
 
 		protected CopyWorker(int versionLimit) {
-			this.versionLimit = getVersionLimit();
+			this.versionLimit = Integer.valueOf(itemData.get(VERSIONLIMIT));
 			docList = new ArrayList<Document>();
 		}
 		

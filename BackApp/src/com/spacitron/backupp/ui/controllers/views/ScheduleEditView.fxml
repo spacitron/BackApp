@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" fx:id="anchorDialog" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="289.9999000000025" prefWidth="350.9999000000025" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.spacitron.backupp.ui.controllers.ScheduleEditController">
+  <children>
+    <GridPane id="GridPane" hgap="10.0" layoutX="26.0" layoutY="61.0" prefWidth="310.9998779296875" vgap="5.0">
+      <children>
+        <Label text="Backup name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <Label fx:id="labelScheduleName" text="" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label text="Location" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Label fx:id="labelDest" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <TextField fx:id="textVesionLimit" alignment="CENTER_RIGHT" editable="false" maxWidth="-Infinity" prefWidth="51.9998779296875" text="" GridPane.columnIndex="1" GridPane.rowIndex="2">
+          <GridPane.margin>
+            <Insets right="15.0" fx:id="x1" />
+          </GridPane.margin>
+        </TextField>
+        <Label text="Maximum file versions" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <ScrollBar fx:id="scrollVersionLimit" maxHeight="-Infinity" minHeight="17.0" onMouseClicked="#onClickScrollVersion" orientation="VERTICAL" prefHeight="22.0" rotate="180.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+          <GridPane.margin>
+            <Insets left="52.0" fx:id="x2" />
+          </GridPane.margin>
+        </ScrollBar>
+        <Label text="Interval between backups" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <Label text="Date Created" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <Label fx:id="labelStarted" text="" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+        <Label fx:id="labelDateCreated" text="" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <TextField id="textVesionLimit" fx:id="textInterval" alignment="CENTER_RIGHT" editable="false" maxWidth="-Infinity" prefWidth="51.9998779296875" text="" GridPane.columnIndex="1" GridPane.margin="$x1" GridPane.rowIndex="3" />
+        <ScrollBar fx:id="scrollInterval" maxHeight="-Infinity" minHeight="17.0" onMouseClicked="#onClickScrollInterval" orientation="VERTICAL" prefHeight="22.0" rotate="180.0" GridPane.columnIndex="1" GridPane.margin="$x2" GridPane.rowIndex="3" />
+        <ComboBox fx:id="comboInterval" editable="false" onAction="#setTimeMultiplier" GridPane.columnIndex="1" GridPane.rowIndex="3">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+          <GridPane.margin>
+            <Insets left="72.0" />
+          </GridPane.margin>
+        </ComboBox>
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="176.0" minWidth="10.0" prefWidth="140.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="161.0" minWidth="10.0" prefWidth="161.0" />
+      </columnConstraints>
+      <padding>
+        <Insets />
+      </padding>
+      <rowConstraints>
+        <RowConstraints maxHeight="16.0" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="16.0" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="22.0" minHeight="10.0" prefHeight="22.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="22.0" minHeight="10.0" prefHeight="22.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="16.0" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="16.0" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+    <Label alignment="CENTER" contentDisplay="CENTER" layoutX="52.0" layoutY="25.0" prefWidth="141.0" text="Edit backup schedule">
+      <font>
+        <Font name="System Bold" size="12.0" />
+      </font>
+    </Label>
+    <HBox id="HBox" alignment="CENTER" layoutX="41.0" layoutY="224.0" prefWidth="216.0" spacing="5.0">
+      <children>
+        <Button fx:id="buttCancel" mnemonicParsing="false" onAction="#onCancelButtClick" prefWidth="70.0" text="Cancel">
+          <HBox.margin>
+            <Insets right="20.0" />
+          </HBox.margin>
+        </Button>
+        <Button fx:id="buttonSave" mnemonicParsing="false" onAction="#onSaveButtClick" prefWidth="70.0" text="Save" />
+      </children>
+    </HBox>
+  </children>
+</AnchorPane>

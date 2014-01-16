@@ -49,7 +49,7 @@
         </ScrollBar>
         <TextField fx:id="textVesionLimit" alignment="CENTER_RIGHT" editable="false" maxWidth="-Infinity" prefWidth="51.9998779296875" text="" GridPane.columnIndex="1" GridPane.margin="$x3" GridPane.rowIndex="3" />
         <ScrollBar fx:id="scrollVersionLimit" maxHeight="-Infinity" minHeight="17.0" onMouseClicked="#scollVersionPressed" orientation="VERTICAL" prefHeight="22.0" rotate="180.0" GridPane.columnIndex="1" GridPane.margin="$x4" GridPane.rowIndex="3" />
-        <ComboBox fx:id="comboInterval" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <ComboBox fx:id="comboInterval" editable="false" onAction="#setTimeMulitplier" GridPane.columnIndex="1" GridPane.rowIndex="2">
           <items>
             <FXCollections fx:factory="observableArrayList">
               <String fx:value="Item 1" />

@@ -73,6 +73,7 @@ public class MakeScheduleController extends AnchorPane implements Initializable{
 	ObservableList<File> fileList;
 	FileChooser fileChooser;
 	DirectoryChooser dirChooser;
+	int timeMultitplier;
 	
 	public MakeScheduleController(){
 		fileChooser = new FileChooser();
@@ -141,12 +142,24 @@ public class MakeScheduleController extends AnchorPane implements Initializable{
 			labelNoStartErr.setVisible(true);
 		}
 	}
+
+	@FXML
+	private void setTimeMulitplier(){
+		String select = comboInterval.getSelectionModel().getSelectedItem();
+		switch(select){
+		case "Minutes":timeMultitplier=60000;
+		break;
+		case "Hours":timeMultitplier=3600000;
+		break;
+		case "Days":timeMultitplier=86400000;
+		}
+	}
 	
 	private boolean makeBackup(String name, boolean start){
 		boolean validDest = checkDestination();
 		boolean validName = checkName();
 		String destination = textDestination.getText();
-		long interval = Long.valueOf(textInterval.getText());
+		long interval = Long.valueOf(textInterval.getText()) * timeMultitplier;
 		int versionLimit = Integer.valueOf(textVesionLimit.getText());
 		if(validDest && validName){
 			List<File> addedFiles = listFiles.getItems();
@@ -166,6 +179,7 @@ public class MakeScheduleController extends AnchorPane implements Initializable{
 		}
 		return false;
 	}
+	
 	
 	private boolean checkDestination(){
 			String dest = textDestination.getText();
@@ -203,7 +217,7 @@ public class MakeScheduleController extends AnchorPane implements Initializable{
 	@FXML
 	private void chooseFiles(){
 		Stage stageFileChooser = new Stage();
-		fileChooser.setTitle("Select the output destination");
+		fileChooser.setTitle("Select files for backup");
 		List<File> files = fileChooser.showOpenMultipleDialog(stageFileChooser);
 		if(!(files == null)){
 			for(File file:files){

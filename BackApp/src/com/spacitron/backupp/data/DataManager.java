@@ -26,23 +26,6 @@ public class DataManager {
 		this.destination = destination;
 	}
 
-//	public static void main (String[] args){
-//		DataManager d = new DataManager( "C:\\Users\\paolo\\Desktop\\testSc\\meta\\testSc");
-//		try {
-//			Connection c = d.getDataSource();
-//			Statement s = c.createStatement();
-//			ResultSet set = s.executeQuery("SELECT * FROM SCHEDULE");
-//			ResultSetMetaData m = set.getMetaData();
-//			for(int i=1; i<=m.getColumnCount(); i++){
-//				System.out.println(set.getString(i));
-//			}
-//		} catch (ClassNotFoundException | SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//	}
-	
 	protected  synchronized HashMap<String, String> getRow(String tableName, String itemName) {
 		
 		HashMap<String, String> rowMap = new HashMap<String, String>();

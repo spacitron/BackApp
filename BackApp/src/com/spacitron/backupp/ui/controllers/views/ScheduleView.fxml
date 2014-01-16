@@ -2,49 +2,52 @@
 
 <?import java.lang.*?>
 <?import java.util.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.spacitron.backupp.ui.controllers.ScheduleViewController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.spacitron.backupp.ui.controllers.ScheduleViewController">
   <children>
-    <SplitPane dividerPositions="0.46153846153846156" focusTraversable="true" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="-2.0">
-      <items>
-        <AnchorPane minHeight="0.0" minWidth="100.0" prefHeight="160.0" prefWidth="100.0">
-          <children>
-            <SplitPane dividerPositions="0.601010101010101" focusTraversable="true" minWidth="-1.0" orientation="VERTICAL" prefHeight="398.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="218.0" prefWidth="271.0">
-                  <children>
-                    <ListView fx:id="listScheduleNames" onMouseClicked="#onScheduleSelected" prefHeight="195.0" prefWidth="254.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  </children>
-                </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="175.0" prefWidth="271.0">
-                  <children>
-                    <ScrollPane content="$null" prefHeight="155.0" prefWidth="271.0" vbarPolicy="AS_NEEDED" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                    <Label fx:id="labelDestCap" layoutX="11.0" layoutY="10.0" text="Location:" visible="false" />
-                    <Label fx:id="labelVersionCap" layoutX="10.0" layoutY="36.0" prefWidth="84.0" text="File versions:" visible="false" />
-                    <Label fx:id="labelIntervalCap" layoutX="10.0" layoutY="62.0" text="Backup interval:" visible="false" />
-                    <Label fx:id="labelDest" layoutX="112.0" layoutY="10.0" text="" />
-                    <Label fx:id="labelVersion" layoutX="112.0" layoutY="36.0" text="" />
-                    <Label fx:id="labelInterval" layoutX="112.0" layoutY="62.0" text="" />
-                    <Label fx:id="labelDateCreatedCap" layoutX="10.0" layoutY="90.0" text="Created on:" visible="false" />
-                    <Label id="labelInterval" fx:id="labelDateCreated" layoutX="112.0" layoutY="90.0" text="" />
-                    <Button fx:id="buttonStartSchedule" layoutX="10.0" layoutY="113.0" mnemonicParsing="false" onAction="#startSchedule" text="Start" visible="false" />
-                    <Button fx:id="buttonStopSchedule" layoutX="84.0" layoutY="113.0" mnemonicParsing="false" onAction="#stopSchedule" text="Stop" visible="false" />
-                    <Label fx:id="labelScheduleEmpty" layoutX="11.0" layoutY="139.0" prefWidth="271.0" text="Please add files before starting this backup" textFill="RED" visible="false" />
-                  </children>
-                </AnchorPane>
-              </items>
-            </SplitPane>
-          </children>
-        </AnchorPane>
-        <AnchorPane minHeight="-1.0" minWidth="300.0" prefHeight="160.0" prefWidth="300.0">
-          <children>
-            <ListView fx:id="listDocNames" onMouseClicked="#onDocumentSelected" prefHeight="398.0" prefWidth="319.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-          </children>
-        </AnchorPane>
-      </items>
-    </SplitPane>
+    <ListView fx:id="listDocNames" layoutX="267.0" layoutY="33.0" onMouseClicked="#onDocumentSelected" prefHeight="306.0" prefWidth="306.0" />
+    <ListView fx:id="listScheduleNames" layoutX="28.0" layoutY="33.0" onMouseClicked="#onScheduleSelected" prefHeight="217.0" prefWidth="217.0" />
+    <Label fx:id="labelScheduleEmpty" layoutX="32.0" layoutY="279.0" prefWidth="233.0" text="Please add files before starting this backup" textFill="RED" visible="false" />
+    <GridPane id="GridPane" hgap="10.0" layoutX="19.0" layoutY="284.0" vgap="5.0">
+      <children>
+        <Label fx:id="labelDestCap" text="Location:" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <Label fx:id="labelVersionCap" prefWidth="84.0" text="File versions:" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Label fx:id="labelIntervalCap" text="Backup interval:" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <Label fx:id="labelDest" text="" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label fx:id="labelVersion" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Label fx:id="labelInterval" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Label fx:id="labelDateCreatedCap" text="Created on:" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <Label id="labelInterval" fx:id="labelDateCreated" text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+      </columnConstraints>
+      <padding>
+        <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+      </padding>
+      <rowConstraints>
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+    <HBox id="HBox" alignment="CENTER" layoutX="31.0" layoutY="258.0" spacing="5.0">
+      <children>
+        <Button fx:id="buttonStartSchedule" mnemonicParsing="false" onAction="#startSchedule" prefWidth="70.0" text="Start" visible="false" />
+        <Button fx:id="buttonStopSchedule" mnemonicParsing="false" onAction="#stopSchedule" prefWidth="70.0" text="Stop" visible="false">
+          <HBox.margin>
+            <Insets left="10.0" />
+          </HBox.margin>
+        </Button>
+      </children>
+    </HBox>
+    <Button fx:id="buttonAddFiles" layoutX="268.0" layoutY="352.0" mnemonicParsing="false" onAction="#addFiles" prefWidth="70.0" text="Add Files" />
+    <Label fx:id="labelNoScheduleErr" layoutX="31.0" layoutY="14.0" prefWidth="214.0" text="Select a backup to add the files to" textFill="RED" visible="false" />
   </children>
 </AnchorPane>
