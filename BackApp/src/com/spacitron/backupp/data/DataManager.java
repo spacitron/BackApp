@@ -21,9 +21,8 @@ public class DataManager {
 	private static final String DOTS = "....";
 	private String destination;
 	
-	
-	protected DataManager(String destination){
-		this.destination = destination;
+	protected DataManager(String dest){
+		this.destination=dest;
 	}
 
 	protected  synchronized HashMap<String, String> getRow(String tableName, String itemName) {
@@ -211,21 +210,6 @@ public class DataManager {
 		}
 		return stringObj;
 	}
-	
-// 	This is here for testing purposes	
-//	
-//	public void printData(String table){
-//		ArrayList<HashMap<String, String>> rows = getTable(table);
-//		for(HashMap<String, String> row:rows){
-//			Iterator <Entry<String, String>> it = row.entrySet().iterator();
-//			while(it.hasNext()){
-//				Map.Entry<String, String> p = it.next();
-//				System.out.print(" | "+p.getKey()+" = "+p.getValue()+" | ");	
-//			}
-//			System.out.println();
-//		}
-//	}
-	
 	
 
 }

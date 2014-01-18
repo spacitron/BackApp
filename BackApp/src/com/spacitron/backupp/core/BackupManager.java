@@ -9,21 +9,45 @@ import com.spacitron.backupp.data.FileSystemFiler;
 import com.spacitron.backupp.data.Filer;
 import com.spacitron.backupp.data.FilerFactory;
 
-public class BackupManager {
+public class BackupManager implements BackupObservable {
 
-	
-	static ArrayList<String> scheduleNames = new ArrayList<>();
-	static FilerFactory filerFac = FilerFactory.getFilerFactory();
-	static HashMap<String, Schedule> schedules = retrieveSchedules();
+	private ArrayList<BackupObserver> observers;
+	private static BackupManager manager;
+//	private ArrayList<String> scheduleNames;
+	private FilerFactory filerFac;
+	private HashMap<String, Schedule> schedules;
 	
 	/**
 	 * This class provides a communication point between the lower layers and the user interface. 
 	 */
 	private BackupManager(){
+		observers = new ArrayList<>();
+//		scheduleNames = new ArrayList<>();
+		filerFac = FilerFactory.getFilerFactory();
+		schedules = retrieveSchedules();
 	}
 	
-	public static ArrayList<String> getScheduleNames(){
-		return scheduleNames;
+	public static BackupManager getBackupManagerSingleton(){
+		if(manager==null){
+			manager = new BackupManager();
+		}
+		return manager;
+	}
+	
+	@Override
+	public void registerObserver(BackupObserver observer) {
+		observers.add(observer);
+	}
+	
+	public void alertObservers(){
+			for(BackupObserver observer:observers){
+				observer.alertObserver();
+			}
+	}
+	
+	public Set<String> getScheduleNames(){
+		Set<String> names = schedules.keySet();
+		return names;
 	}
 		
 	/**
@@ -36,8 +60,8 @@ public class BackupManager {
 	 * @param versionLimit Maximum number of copies for each file managed by this schedule.
 	 * @return Returns false if the output destination selected cannot be reached.
 	 */
-	public static boolean addSchedule(String name, String destination, long interval, int versionLimit){
-		if(scheduleNames.contains(name)){
+	public boolean addSchedule(String name, String destination, long interval, int versionLimit){
+		if(schedules.containsKey(name)){
 			return false;
 		}
 		Filer filer;
@@ -48,8 +72,9 @@ public class BackupManager {
 			return false;
 		}
 		Schedule schedule = new Schedule(name, interval, versionLimit, filer);
-		scheduleNames.add(name);
 		schedules.put(name, schedule);
+		
+		alertObservers();
 		return true;
 	}
 	
@@ -59,13 +84,14 @@ public class BackupManager {
 	 * @param scheduleName Name of existing schedule to which files or directories need to be added for backup
 	 * @param filePaths Absolute paths of files to be added to this schedule.
 	 */
-	public static void addToSchedule(String scheduleName, String... filePaths){
+	public void addToSchedule(String scheduleName, String... filePaths){
 		for(String filePath:filePaths){
 			schedules.get(scheduleName).addMaster(filePath);
 		}
+		alertObservers();
 	}
 	
-	public static boolean scheduleIsStarted(String scheduleName){
+	public boolean scheduleIsStarted(String scheduleName){
 		return schedules.get(scheduleName).isStarted();
 	}
 	
@@ -73,7 +99,7 @@ public class BackupManager {
 	 * @param scheduleName Name of existing schedule.
 	 * @return Returns data maps of each of the files stored in the backup managed by the named schedule. 
 	 */
-	public static ArrayList<HashMap<String, String>> getBackupData(String scheduleName){
+	public ArrayList<HashMap<String, String>> getBackupData(String scheduleName){
 		return schedules.get(scheduleName).getBackupMaps();
 	}
 	
@@ -81,23 +107,26 @@ public class BackupManager {
 	 * @param scheduleName Name of the schedule for which data is requested.
 	 * @return Data map for display purposes.
 	 */
-	public static HashMap<String, String> getScheduleData(String scheduleName){
+	public HashMap<String, String> getScheduleData(String scheduleName){
 		return schedules.get(scheduleName).getData();		
 	}
 	
 	//This method needs to be overloaded in order to give the user the opportunity to decide what to do with the stored files
-	public static void removeFilesFromSchedule(String scheduleName, String... filePaths){
+	public void removeFilesFromSchedule(String scheduleName, String... filePaths){
 		for(String filePath:filePaths){
 			schedules.get(scheduleName).removeMasterDocument(filePath);
 		}
+		alertObservers();
 	}
 	
-	public static void setScheduleInterval(String scheduleName, long interval){
+	public void setScheduleInterval(String scheduleName, long interval){
 		schedules.get(scheduleName).setInterval(interval);
+		alertObservers();
 	}
 
-	public static void setScheduleVersionLimit(String scheduleName, int limit){
+	public void setScheduleVersionLimit(String scheduleName, int limit){
 		schedules.get(scheduleName).setVerionLimit(limit);
+		alertObservers();
 	}
 	
 	/**
@@ -105,8 +134,12 @@ public class BackupManager {
 	 * 
 	 * @param scheduleName Name of existing schedule.
 	 */
-	public static boolean startSchedule(String scheduleName){
-		return schedules.get(scheduleName).start();
+	public boolean startSchedule(String scheduleName){
+		if(schedules.get(scheduleName).start()){
+			alertObservers();
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -114,11 +147,12 @@ public class BackupManager {
 	 * 
 	 * @param scheduleName Name of existing schedule.
 	 */
-	public static void stopSchedule(String scheduleName){
+	public void stopSchedule(String scheduleName){
+		alertObservers();
 		schedules.get(scheduleName).stop();
 	}
 	
-	public static Set<String> getMasterDocuments(String scheduleName){
+	public Set<String> getMasterDocuments(String scheduleName){
 		return schedules.get(scheduleName).getMasterDocuments();
 	}
 	
@@ -129,12 +163,12 @@ public class BackupManager {
 	 * @param scheduleName Name of existing schedule.
 	 * @param filePaths Paths of files tracked by above schedule.
 	 */
-	public static boolean removeFiles(String scheduleName, String...filePaths){
+	public void removeFiles(String scheduleName, String...filePaths){
 		Schedule schedule = schedules.get(scheduleName);
 		for(String path: filePaths){
 			schedule.removeMasterDocument(path);
 		}
-		return false;
+		alertObservers();
 	}
 	
 	/**
@@ -144,11 +178,12 @@ public class BackupManager {
 	 * @param docNames Path of the stored documents to be deleted.
 	 * @return
 	 */
-	public static boolean deleteBackups(String scheduleName, String...docNames){
+	public boolean deleteBackups(String scheduleName, String...docNames){
 		Schedule schedule = schedules.get(scheduleName);
 		for(String name:docNames){
 			schedule.deleteStoredDocument(name);
 		}
+		alertObservers();
 		return false;
 	}
 	
@@ -159,18 +194,21 @@ public class BackupManager {
 	 * @param scheduleName Name of schedule to be deleted.
 	 * @return True if all files and folders associated with this schedule have been removed.
 	 */
-	public static boolean deleteSchedule(String scheduleName){
+	public boolean deleteSchedule(String scheduleName){
 		if(schedules.get(scheduleName).delete()){
 			filerFac.deleteFiler(scheduleName);
+			schedules.remove(scheduleName);
+			alertObservers();
 			return true;
 		}
+		alertObservers();
 		return false;
 	}
 
 	/**
 	 * Helper method that re-populates this controller with stored schedules. 
 	 */
-	private static HashMap<String, Schedule> retrieveSchedules(){
+	private HashMap<String, Schedule> retrieveSchedules(){
 		HashMap<String, Schedule> schedules = new HashMap<>();
 		ArrayList<Filer> filers = filerFac.retrieveFilers();
 		for(Filer filer: filers){
@@ -182,9 +220,9 @@ public class BackupManager {
 				int versionLimit = Integer.valueOf(map.get(Schedule.VERSIONLIMIT));
 				Schedule schedule =  new Schedule(name, interval, versionLimit, filer);
 				schedules.put(name, schedule);
-				scheduleNames.add(name);
 			}
 		}
 		return schedules;
 	}
+
 }

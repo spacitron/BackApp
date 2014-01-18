@@ -73,9 +73,11 @@ public class MakeScheduleController extends AnchorPane implements Initializable{
 	ObservableList<File> fileList;
 	FileChooser fileChooser;
 	DirectoryChooser dirChooser;
+	BackupManager backupManager;
 	int timeMultitplier;
 	
 	public MakeScheduleController(){
+		backupManager = BackupManager.getBackupManagerSingleton();
 		fileChooser = new FileChooser();
 		dirChooser = new DirectoryChooser();
 		stage = new Stage();
@@ -136,7 +138,7 @@ public class MakeScheduleController extends AnchorPane implements Initializable{
 	@FXML
 	private void buttonSaveAndStartPressed(){
 		String name = textName.getText();
-		if(makeBackup(name, true) && BackupManager.startSchedule(name)){
+		if(makeBackup(name, true) && backupManager.startSchedule(name)){
 			stage.close();
 		}else{
 			labelNoStartErr.setVisible(true);
@@ -167,10 +169,9 @@ public class MakeScheduleController extends AnchorPane implements Initializable{
 				labelNoFileErr.setVisible(true);
 				return false;
 			}
-			if(BackupManager.addSchedule(name, destination, interval, versionLimit)){
-				ScheduleViewController.addSchedule(name);
+			if(backupManager.addSchedule(name, destination, interval, versionLimit)){
 				for(File f:addedFiles){
-					BackupManager.addToSchedule(name, f.getAbsolutePath());
+					backupManager.addToSchedule(name, f.getAbsolutePath());
 				}
 				return true;
 			}else{
