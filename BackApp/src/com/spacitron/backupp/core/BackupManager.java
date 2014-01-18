@@ -13,7 +13,6 @@ public class BackupManager implements BackupObservable {
 
 	private ArrayList<BackupObserver> observers;
 	private static BackupManager manager;
-//	private ArrayList<String> scheduleNames;
 	private FilerFactory filerFac;
 	private HashMap<String, Schedule> schedules;
 	
@@ -22,7 +21,6 @@ public class BackupManager implements BackupObservable {
 	 */
 	private BackupManager(){
 		observers = new ArrayList<>();
-//		scheduleNames = new ArrayList<>();
 		filerFac = FilerFactory.getFilerFactory();
 		schedules = retrieveSchedules();
 	}
