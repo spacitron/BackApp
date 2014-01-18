@@ -55,11 +55,13 @@ public class ScheduleEditController implements Initializable{
 	private int timeMultiplier; 
 	
 	private static String scheduleName;
+	private BackupManager backupManager;
 	
 	private Stage stage;
 	
 	
 	public ScheduleEditController(){
+		backupManager = BackupManager.getBackupManagerSingleton();
 		stage = new Stage();
 		days = new Text("Days");
 		days.setId("86400000");
@@ -72,7 +74,7 @@ public class ScheduleEditController implements Initializable{
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		HashMap<String, String> map = BackupManager.getScheduleData(scheduleName);
+		HashMap<String, String> map = backupManager.getScheduleData(scheduleName);
 		labelScheduleName.setText(scheduleName);
 		labelDest.setText(map.get(Schedule.DESTINATION));
 		
@@ -81,7 +83,7 @@ public class ScheduleEditController implements Initializable{
 		SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yy 'at' hh.mm.ss a");
 		labelDateCreated.setText(formatDate.format(date));
 		
-		if(BackupManager.scheduleIsStarted(scheduleName)){
+		if(backupManager.scheduleIsStarted(scheduleName)){
 			labelStarted.setText("Running");
 		}else{
 			labelStarted.setText("Stopped");
@@ -121,8 +123,8 @@ public class ScheduleEditController implements Initializable{
 		int version = Integer.valueOf(textVesionLimit.getText());
 		int interval = Integer.valueOf(textInterval.getText());
 		long newInterval = interval*timeMultiplier;
-		BackupManager.setScheduleInterval(scheduleName, newInterval);
-		BackupManager.setScheduleVersionLimit(scheduleName,version);
+		backupManager.setScheduleInterval(scheduleName, newInterval);
+		backupManager.setScheduleVersionLimit(scheduleName,version);
 		stage.close();
 	}
 	

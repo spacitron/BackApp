@@ -1,21 +1,16 @@
 The following is a list of the most urgent issues in the project:
 
-	1)	Create an observable interface to be implements by the BackupManager so that changes to its entities (new files, errors etc)
-		can	be directly communicated to the interested controllers. 
-
-	2)	Method BackupControl.retreiveSchedules() should handle the following cases:
+	1)	Method BackupManager.retreiveSchedules() should handle the following cases:
 			- Schedule cannot be reached.
 			- Backups are found for documents that are no longer tracked by the system.
 
-	3)	Method  Schedule.removeMasterFile() should handle options dealing with backup copies of the master files to be removed.
-
-	4)	BackupControl needs methods to handle schedule update operations. 
+	2)	Method  Schedule.removeMasterFile() should handle options dealing with backup copies of the master files to be removed.
 	
-	5)  Needs to handle filers and documents that do not have a corresponding local filer (so that
+	3)  Needs to handle filers and documents that do not have a corresponding local filer (so that
 		if the original local database is compromised for some reason the backups can be restored using a
 		fresh instance of the app). 
 	
-	6) Handle exceptions!
+	4) Handle exceptions!
 
 
 The following is a list of future nice-haves features for the project:
@@ -29,7 +24,7 @@ The following is a list of future nice-haves features for the project:
 	
 Gui todo list:
 
-	1) Handle file addition from ScheduleView through drag&drop, FileChooser selection and direct typing of file path.
+	1) Handle file addition from ScheduleView through drag&drop and direct typing of file path.
 	
 	2) Enable view of backup details for each file  
 	
@@ -37,7 +32,7 @@ Gui todo list:
 	
 	4) Enable editing schedule location (will copy backup contents to new location and delete old ones)
 
-	5) In the ComcoBox in MakeScheduleView use Text objects instead of strings so that the id can set to the necessary value
+	5) In the ComboBox in MakeScheduleView use Text objects instead of strings so that the id can set to the necessary value
 	   in milliseconds while the display text can be changed at runtime.(this is dependent on the bug of disappearing text to be solved)
 
 	6) Need GUI facilities for adding directories to backup as well as files
